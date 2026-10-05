@@ -39,7 +39,7 @@
   <button id="bDisc" class="sec" disabled>Scollega</button>
   <div id="state" class="st">Non collegato</div>
   <label for="extra">UUID servizi aggiuntivi da provare (uno per riga, opzionale)</label>
-  <input id="extra" placeholder="es. 00005301-0000-0041-4c50-574953450000">
+  <input id="extra" placeholder="opzionale">
 </section>
 
 <section>
@@ -67,7 +67,7 @@ const hex = dv => [...new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength)].m
 
 // UUID candidati (servizio Bosch riportato da progetti non ufficiali, più servizi standard)
 const CANDIDATES = [
-  '00005301-0000-0041-4c50-574953450000',
+  '00005301-0000-0041-5253-534f46540000',
   'generic_access', 'generic_attribute', 'device_information', 'battery_service',
   '0000fff0-0000-1000-8000-00805f9b34fb', '0000ffe0-0000-1000-8000-00805f9b34fb',
   '6e400001-b5a3-f393-e0a9-e50e24dcca9e'
@@ -132,7 +132,7 @@ $('bSub').onclick = async () => {
 
 $('bSync').onclick = async () => {
   const bytes = new Uint8Array($('cmd').value.trim().split(/\s+/).map(h => parseInt(h, 16)));
-  const w = chars.filter(c => c.properties.write || c.properties.writeWithoutResponse);
+  const w = chars.filter(c => c.service.uuid.startsWith('00005301') && (c.properties.write || c.properties.writeWithoutResponse));
   if (!w.length) return log('Nessuna caratteristica scrivibile.');
   for (const c of w) {
     try { c.properties.write ? await c.writeValue(bytes) : await c.writeValueWithoutResponse(bytes); log(`Inviato ${hex(new DataView(bytes.buffer))} a ${c.uuid}`); }
